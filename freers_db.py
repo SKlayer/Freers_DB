@@ -37,10 +37,11 @@ def insert_blk(blk_hash):
     last_blocks.append(blk_hash)
 
 def revert_blk():
-    if not last_blocks:
+    if len(last_blocks) <= 1:
         return config.config["genesis_block"]
-    last_blk = last_blocks[-1]
     last_blocks.pop(-1)
+    last_blk = last_blocks[-1]
+
     return last_blk
 
 
