@@ -12,7 +12,7 @@ import tornado.options
 from tornado import gen
 import json
 from concurrent.futures import ThreadPoolExecutor
-
+import transaction_call
 
 set.create_table()
 
@@ -34,7 +34,8 @@ server_elapsed_time = time.time()
 def insert_blk(blk_hash):
     if len(last_blocks) > config.BLOCK_HASH_CACHES:
         last_blocks.pop(0)
-    last_blocks.append(blk_hash)
+    if not blk_hash in last_blocks:
+        last_blocks.append(blk_hash)
 
 def revert_blk():
     if len(last_blocks) <= 1:
@@ -84,7 +85,7 @@ def block_updater():
         if end_time == 0:
             start_time = 0
         logger.info(
-            f"Receive new block {next_block_hash},Height {block['height']}. Cost {round((end_time - start_time) * 1000, 3)}ms")
+            f"Update Tip: Block={next_block_hash},Height={block['height']}. Cost={round((end_time - start_time) * 1000, 3)}ms")
         start_time = time.time()
         for i in txs:
             if first_tx:
@@ -92,6 +93,7 @@ def block_updater():
                 continue
             tx = rpc_connection.decoderawtransaction(rpc_connection.getrawtransaction(i))
             detail = decode.resove_trans(tx, rpc_connection)
+            transaction_call.transaction(*decode.transaction_caller(tx,rpc_connection))
 
             if detail is not None:
                 address, name, tags, pubkey = tuple(detail)
@@ -147,7 +149,7 @@ def run_api_server():
         (r"/get_freer_by_address", GetFreers),
         (r"/stats", GetServiceStats),
     ], autoreload=False)
-    app.listen(8080, address="127.0.0.1")
+    app.listen(8080, address="0.0.0.0")
 
     tornado.ioloop.IOLoop.current().start()
 

@@ -64,4 +64,23 @@ def resove_trans(tx, rpc):
 
     return None
 
+def transaction_caller(tx, rpc):
+    try:
+        pubkey = tx["vin"][0]["scriptSig"]["asm"].split("[ALL|FORKID] ")[-1]
+    except:
+        pubkey = None
+    op_return_msg = None
+    for i in tx["vout"]:
+        if i["scriptPubKey"]["type"] == "nulldata":
+            script_hex = i["scriptPubKey"]["hex"]
+            if start_with(script_hex,"6a"):
+                # OP_RETURN
+                op_return_msg = binascii.a2b_hex(script_hex[2:]).decode("UTF-8")
+
+    return rpc,tx,op_return_msg,pubkey
+
+
+
+
+
 
