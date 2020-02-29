@@ -10,7 +10,8 @@ def asm_freer(freer):
         "public_key": freer.freer_pubkey,
         "registe_block": freer.freer_regist_block,
         "latest_block": freer.freer_lastest_block,
-        "quit": freer.freer_quit
+        "quit": freer.freer_quit,
+        "adviser": freer.freer_adviser,
 
     }
 

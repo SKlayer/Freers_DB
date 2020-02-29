@@ -27,7 +27,9 @@ class Freer(Model):
     freer_suffix = CharField(max_length=33)
     freer_pubkey = CharField(max_length=66)
     freer_quit = IntegerField()
-    freer_CID = CharField(max_length=67, unique=True, )
+    freer_CID = CharField(max_length=67)
+
+    freer_adviser = CharField(max_length=32)
 
     freer_regist_block = CharField()
     freer_lastest_block = CharField()

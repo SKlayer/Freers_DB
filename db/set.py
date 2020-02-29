@@ -8,7 +8,7 @@ def create_table():
 
 
 
-def update_freer(address,name,tags,pubkey,height):
+def update_freer(address,name,tags,pubkey,height,adviser):
     db.connect(reuse_if_open=True)
     freer = Freer.get_or_none(Freer.freer_address == address)
     if freer is None:
@@ -29,19 +29,15 @@ def update_freer(address,name,tags,pubkey,height):
             freer_suffix = freer_suffix,
             freer_pubkey = pubkey,
             freer_CID = CID,
+            freer_adviser = adviser,
             freer_regist_block = str(height),
             freer_lastest_block = str(height)
         )
 
     else:
-        freer_suffix = ""
-        for i in range(4, 34):
-            freer_suffix = address[34 - i:34]
-            try:
-                Freer.select().where(Freer.freer_address.endswith(freer_suffix)).get()
-            except:
-                break
+        freer_suffix = Freer.freer_suffix
         CID = f"{name}_{freer_suffix}"
+
 
         Freer.update(
             freer_user_name=name,

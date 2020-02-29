@@ -94,12 +94,12 @@ def block_updater():
             transaction_call.transaction(*decode.transaction_caller(tx,rpc_connection))
 
             if detail is not None:
-                address, name, tags, pubkey = tuple(detail)
+                address, name, tags, pubkey,adviser = tuple(detail)
                 if name == "" and tags == "":
                     set.set_quit_freer(address)
                 else:
-                    set.update_freer(address, name, tags, pubkey, block["height"])
-                logger.info(f"Update new record.  Addr:{address},Username:{name},Tags:{tags},PublicKey:{pubkey}")
+                    set.update_freer(address, name, tags, pubkey, block["height"],adviser)
+                logger.info(f"Update new record.  Addr:{address},Username:{name},Tags:{tags},PublicKey:{pubkey},Adviser:{adviser}")
         end_time = time.time()
 
 

@@ -9,13 +9,22 @@ def start_with(string, start):
         return True
     return False
 
-def resolve_feip(opreturn):
-    if opreturn.count("|") != 4:
-        return None
+def resolve_feip3(opreturn):
     opreturn = opreturn.split("|")
+    print(opreturn)
+    if opreturn[0] != "FEIP":
+        return None
+    if opreturn[1] != "3":
+        return None
+    if len(opreturn)<4:
+        return None
     username = opreturn[3]
     tags = opreturn[4]
-    return [username, tags]
+    adviser = ""
+    if len(opreturn) >= 6:
+        adviser = opreturn[5]
+
+    return [username, tags,adviser]
 
 
 
@@ -37,8 +46,8 @@ def resove_trans(tx, rpc):
                 # OP_RETURN
                 pubkey = tx["vin"][0]["scriptSig"]["asm"].split("[ALL|FORKID] ")[-1]
 
-                op_return_msg = binascii.a2b_hex(script_hex[2:]).decode("UTF-8")
-                op_return_msg = resolve_feip(op_return_msg)
+                op_return_msg = binascii.a2b_hex(script_hex[4:]).decode("UTF-8")
+                op_return_msg = resolve_feip3(op_return_msg)
                 if op_return_msg is None:
                     return None
                 vin_total = 0
@@ -60,7 +69,7 @@ def resove_trans(tx, rpc):
                 if mining_fee < config.min_fee:
                     return None
 
-                return [address,op_return_msg[0],op_return_msg[1],pubkey]
+                return [address,op_return_msg[0],op_return_msg[1],pubkey,op_return_msg[2]]
 
     return None
 
