@@ -19,6 +19,7 @@ def update_freer(address,name,tags,pubkey,height):
                 Freer.select().where(Freer.freer_address.endswith(freer_suffix)).get()
             except:
                 break
+        CID = f"{name}_{freer_suffix}"
 
         Freer.create(
             freer_address=address,
@@ -27,15 +28,26 @@ def update_freer(address,name,tags,pubkey,height):
             freer_quit=0,
             freer_suffix = freer_suffix,
             freer_pubkey = pubkey,
+            freer_CID = CID,
             freer_regist_block = str(height),
             freer_lastest_block = str(height)
         )
 
     else:
+        freer_suffix = ""
+        for i in range(4, 34):
+            freer_suffix = address[34 - i:34]
+            try:
+                Freer.select().where(Freer.freer_address.endswith(freer_suffix)).get()
+            except:
+                break
+        CID = f"{name}_{freer_suffix}"
+
         Freer.update(
             freer_user_name=name,
             freer_tags=tags,
             freer_lastest_block=str(height),
+            freer_CID=CID,
             freer_quit=0).where(Freer.freer_address == address).execute()
 
 

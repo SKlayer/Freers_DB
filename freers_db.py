@@ -46,8 +46,6 @@ def revert_blk():
     return last_blk
 
 
-
-
 def block_updater():
     logger = logging.getLogger('Block Updater')
     logger.setLevel(logging.INFO)
@@ -97,7 +95,10 @@ def block_updater():
 
             if detail is not None:
                 address, name, tags, pubkey = tuple(detail)
-                set.update_freer(address, name, tags, pubkey, block["height"])
+                if name == "" and tags == "":
+                    set.set_quit_freer(address)
+                else:
+                    set.update_freer(address, name, tags, pubkey, block["height"])
                 logger.info(f"Update new record.  Addr:{address},Username:{name},Tags:{tags},PublicKey:{pubkey}")
         end_time = time.time()
 
@@ -110,7 +111,7 @@ class AllFreers(tornado.web.RequestHandler):
         self.write(json.dumps(get.get_all_freers(0,-1)))
         self.finish()
 
-class GetFreers(tornado.web.RequestHandler):
+class GetFreersByAddress(tornado.web.RequestHandler):
     executor = ThreadPoolExecutor(10)
     logger = logging.getLogger('API.GetFreers')
 
@@ -122,10 +123,24 @@ class GetFreers(tornado.web.RequestHandler):
         else:
             result["result"] = True
 
+        self.write(result)
+        self.finish()
 
+class GetFreersByCID(tornado.web.RequestHandler):
+    executor = ThreadPoolExecutor(10)
+    logger = logging.getLogger('API.GetFreers')
+
+    def get(self):
+        cid = self.get_argument("cid")
+        result = get.get_freer_by_CID(cid)
+        if result is None:
+            result = {"result":False}
+        else:
+            result["result"] = True
 
         self.write(result)
         self.finish()
+
 
 class GetServiceStats(tornado.web.RequestHandler):
     executor = ThreadPoolExecutor(10)
@@ -146,10 +161,11 @@ class GetServiceStats(tornado.web.RequestHandler):
 def run_api_server():
     app = tornado.web.Application([
         (r"/get_all_freer", AllFreers),
-        (r"/get_freer_by_address", GetFreers),
+        (r"/get_freer_by_address", GetFreersByAddress),
+        (r"/get_freer_by_cid", GetFreersByCID),
         (r"/stats", GetServiceStats),
     ], autoreload=False)
-    app.listen(8080, address="0.0.0.0")
+    app.listen(6178, address="0.0.0.0")
 
     tornado.ioloop.IOLoop.current().start()
 
