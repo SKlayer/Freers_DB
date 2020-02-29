@@ -35,9 +35,8 @@ def update_freer(address,name,tags,pubkey,height,adviser):
         )
 
     else:
-        freer_suffix = Freer.freer_suffix
+        freer_suffix = Freer.get_by_id(freer).freer_suffix
         CID = f"{name}_{freer_suffix}"
-
 
         Freer.update(
             freer_user_name=name,
