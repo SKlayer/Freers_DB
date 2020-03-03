@@ -141,6 +141,23 @@ class GetFreersByCID(tornado.web.RequestHandler):
         self.write(result)
         self.finish()
 
+class GetFreersByAdv(tornado.web.RequestHandler):
+    executor = ThreadPoolExecutor(10)
+    logger = logging.getLogger('API.GetFreersADV')
+
+    def get(self):
+        cid = self.get_argument("cid")
+        result = get.get_freer_by_adv(cid)
+        if result is None:
+            result = {"result":False}
+        else:
+            result["result"] = True
+
+        self.write(result)
+        self.finish()
+
+
+
 
 class GetServiceStats(tornado.web.RequestHandler):
     executor = ThreadPoolExecutor(10)
@@ -163,6 +180,7 @@ def run_api_server():
         (r"/get_all_freer", AllFreers),
         (r"/get_freer_by_address", GetFreersByAddress),
         (r"/get_freer_by_cid", GetFreersByCID),
+        (r"/get_freer_by_adv", GetFreersByAdv),
         (r"/stats", GetServiceStats),
     ], autoreload=False)
     app.listen(6178, address="0.0.0.0")
