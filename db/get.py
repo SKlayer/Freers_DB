@@ -24,6 +24,15 @@ def get_freer_by_address(address):
     freer = Freer.get_by_id(result)
     return asm_freer(freer)
 
+def get_freer_by_adv(cid):
+    freers = {}
+    for i in Freer.select().where(Freer.freer_adviser == cid):
+        freers[int(i.id)] = asm_freer(i)
+
+    return freers
+
+
+
 
 def get_freer_by_CID(cid):
     result = Freer.get_or_none(Freer.freer_CID == cid)

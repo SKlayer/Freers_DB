@@ -36,3 +36,14 @@ class Freer(Model):
 
     class Meta:
         database = db
+
+class Tag(Model):
+    tag_name = CharField(max_length=34, unique=True, )
+    tag_addr = Field
+
+    class Meta:
+        database = db
+
+
+
+
